@@ -36,7 +36,7 @@ def preProcessData(supCharDf):
         
     print(supplierMap)
     # Required during inference stage
-    with open('suppliermap.dict', 'wb') as fileHandle:
+    with open('./output/suppliermap.dict', 'wb') as fileHandle:
         pickle.dump(supplierMap, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
     
     return supCharDf
@@ -137,25 +137,24 @@ def compareAndStoreModel():
             selectedModel = algoTripple[2]
     
      # Required for inference
-    with open('selected_ai_ml_model.mdl', 'wb') as fileHandle:
+    with open('./output/selected_ai_ml_model.mdl', 'wb') as fileHandle:
         pickle.dump(selectedModel, fileHandle, protocol=pickle.HIGHEST_PROTOCOL)
         
     print("Best algorithm selected = " +selectedAlgo) 
 
-'''                       
 def persistModelPerformanceMetrics():
     # Persist model metrics and selection for UI
-    modelP4Metrics = pd.DataFrame(['Algorithm', 'MSE', 'MAS'])
+    row = 0
+    modelP4Metrics = pd.DataFrame(columns=['Algorithm', 'MSE', 'MAS'])
     for key in algoMap:
         algoTripple = algoMap[key]
-        algoMSE = algoTripple[0]
-        algoMAS = algoTripple[1]
+        algoMSE = round(algoTripple[0], 2)
+        algoMAS = round(algoTripple[1], 2)
+        modelP4Metrics.loc[row] = [key, algoMSE, algoMAS]
+        row = row + 1
+    modelP4Metrics.to_csv('./output/modelMetrics.csv', mode='w', header=True, encoding='utf-8', index=False)
+    print("Model metrics file saved succesfully...")
         
-        if(algoMSE < minMSE):
-            minMSE = algoMSE
-            selectedAlgo = key
-            selectedModel = algoTripple[2]
-'''
             
 def main():
     supCharDf = pd.read_csv('./output/supplier_characteristics_details.csv')
@@ -171,6 +170,6 @@ def main():
     
     printModelMetrics()
     compareAndStoreModel()
-    #persistModelPerformanceMetrics()
+    persistModelPerformanceMetrics()
     
 main()
